@@ -204,9 +204,10 @@ function updateSpriteRole(){
               message: "Which role do you want to assign?",
               choices: rolesChoices
             } 
-          ]).then(answers => {connection.query("UPDATE employee SET ? where ?", [answers, sprite]);
+          ]).then(answers => {connection.query("UPDATE sprite SET ? where ?", [answers, sprite]);
           console.log(`Sprite Updated Success`);
-          loadMainPrompts();})
+          loadMainPrompts();
+          })
       
       })}
   
