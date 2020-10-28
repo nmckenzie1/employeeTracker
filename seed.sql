@@ -3,7 +3,7 @@ CREATE DATABASE employees;
 
 USE employees;
 
-CREATE TABLE department (
+CREATE TABLE job (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(30) UNIQUE NOT NULL
 );
@@ -11,12 +11,12 @@ CREATE TABLE department (
 CREATE TABLE role (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(30) UNIQUE NOT NULL,
-  department_id INT UNSIGNED NOT NULL,
-  INDEX dep_ind (department_id),
-  CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
+  job_id INT UNSIGNED NOT NULL,
+  INDEX job_ind (job_id),
+  CONSTRAINT fk_department FOREIGN KEY (job_id) REFERENCES job(id) ON DELETE CASCADE
 );
 
-CREATE TABLE employee (
+CREATE TABLE sprite (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
@@ -26,27 +26,29 @@ CREATE TABLE employee (
   );
 
 
-INSERT INTO department
+INSERT INTO job
     (name)
 VALUES
-    ('Sales'),
-    ('Engineering'),
-    ('Finance'),
-    ('Legal');
+    ('Damage'),
+    ('Healing'),
+    ('Tank'),
+    ('Summoner')
+    ;
+    
 
 INSERT INTO role
-    (title, department_id)
+    (title, job_id)
 VALUES
-    ('Sales Lead', 1),
-    ('Salesperson', 1),
-    ('Lead Engineer', 2),
-    ('Software Engineer', 2),
-    ('Account Manager', 3),
-    ('Accountant', 3),
-    ('Legal Team Lead', 4),
-    ('Lawyer', 4);
+    ('Fighter', 1),
+    ('Berserker', 1),
+    ('Cleric', 2),
+    ('White Mage', 2),
+    ('Paladin', 3),
+    ('Warrior', 3),
+    ('Necromancer', 4),
+    ('Warlock', 4);
 
-INSERT INTO employee
+INSERT INTO sprite
     (first_name, last_name, role_id)
 VALUES
     ('John', 'Doe', 1),
@@ -57,4 +59,3 @@ VALUES
     ('Malia', 'Brown', 6),
     ('Sarah', 'Lourd', 7),
     ('Tom', 'Allen', 8);
-

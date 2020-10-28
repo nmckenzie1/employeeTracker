@@ -29,12 +29,12 @@ async function loadMainPrompts() {
           value: "VIEW_SPRITES"
         },
         {
-          name: "Add Employee",
-          value: "ADD_EMPLOYEE"
+          name: "Add Sprite",
+          value: "ADD_SPRITE"
         },
         {
-          name: "Update Employee Role",
-          value: "UPDATE_EMPLOYEE_ROLE"
+          name: "Update Sprite Role",
+          value: "UPDATE_SPRITE_ROLE"
         },
         
         {
@@ -47,12 +47,12 @@ async function loadMainPrompts() {
         },
         
         {
-          name: "View All Departments",
-          value: "VIEW_DEPARTMENTS"
+          name: "View All Jobs",
+          value: "VIEW_JOBS"
         },
         {
-          name: "Add Department",
-          value: "ADD_DEPARTMENT"
+          name: "Add Job",
+          value: "ADD_JOB"
         },
         {
           name: "Quit",
@@ -64,18 +64,16 @@ async function loadMainPrompts() {
   switch (choice) {
     case "VIEW_SPRITES":
       return viewSprites();
-    case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-      return viewEmployeesByDepartment();
-   case "ADD_EMPLOYEE":
-      return addEmployee();
-    case "UPDATE_EMPLOYEE_ROLE":
-      return updateEmployeeRole();
-    case "VIEW_DEPARTMENTS":
-      return viewDepartments();
-    case "ADD_DEPARTMENT":
-      return addDepartment();
+    case "ADD_SPRITE":
+      return addSprite();
+    case "UPDATE_SPRITE_ROLE":
+      return updateSpriteRole();
+    case "VIEW_JOBS":
+      return viewJobs();
+    case "ADD_JOB":
+      return addJob();
     case "VIEW_ROLES":
-      return viewRoles();
+      return viewRole();
     case "ADD_ROLE":
       return addRole();
     default:
@@ -83,32 +81,32 @@ async function loadMainPrompts() {
   }
 }
 function viewSprites() {
-  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name from employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id", function(err,res){
+  connection.query("SELECT sprite.id, sprite.first_name, sprite.last_name, role.title, job.name from sprite LEFT JOIN role on sprite.role_id = role.id LEFT JOIN job on role.job_id = job.id", function(err,res){
     console.log("\n");
     console.table(res)
     loadMainPrompts();
   });
 }
-function viewDepartments() {
-  connection.query("SELECT * from department", function(err,res){
+function viewJobs() {
+  connection.query("SELECT * from job", function(err,res){
     console.log("\n");
     console.table(res)
     loadMainPrompts();
   });
 }
-function viewRoles() {
-  connection.query("SELECT * from role", function(err,res){
+function viewRole() {
+  connection.query("SELECT role.id, role.title, job.name from role LEFT JOIN job on role.job_id = job.id", function(err,res){
     console.log("\n");
     console.table(res)
     loadMainPrompts();
   });
 }
 async function addRole() {
-   connection.query("SELECT * from department", function(err,res){
+   connection.query("SELECT * from job", function(err,res){
 
-    const departments = res
+    const jobs = res
 
-    const departmentChoices = departments.map(({ id, name }) => ({
+    const jobChoices = jobs.map(({ id, name }) => ({
       name: name,
       value: id
     }));
@@ -120,9 +118,9 @@ async function addRole() {
       },
       {
         type: "list",
-        name: "department_id",
-        message: "Which department does the role belong to?",
-        choices: departmentChoices
+        name: "job_id",
+        message: "Which job does this role do?",
+        choices: jobChoices
       }
     ])
     .then(answers => {connection.query("INSERT INTO role SET ?", answers);
@@ -132,19 +130,19 @@ async function addRole() {
    
 })}
 
-async function addDepartment() {
+async function addJob() {
   await inquirer.prompt([
       {
         name: "name",
-        message: "What is the name of the department?"
+        message: "What is the name of the Job?"
       },
     ])
-    .then(answers => {connection.query("INSERT INTO department SET ?", answers);})
-   console.log("Department Added") 
+    .then(answers => {connection.query("INSERT INTO job SET ?", answers);})
+   console.log("Job Added") 
    loadMainPrompts()
 }
 
-function addEmployee() {
+function addSprite() {
   connection.query("SELECT * from role", function(err,res){
     const roles = res
 
@@ -155,29 +153,29 @@ function addEmployee() {
     inquirer.prompt([
       {
         name: "first_name",
-        message: "Employees First name?"
+        message: "Sprite's First name?"
       },
       {
         name: "last_name",
-        message: "Employees Last name?"
+        message: "Sprite's Last name?"
       },
       {
         type: "list",
         name: "role_id",
-        message: "Which role does this employee have?",
+        message: "Which role does this sprite play?",
         choices: roleChoices
       }
     ])
-    .then(answers => {connection.query("INSERT INTO employee SET ?", answers);
-    console.log(`Added employee to the database`);
+    .then(answers => {connection.query("INSERT INTO sprite SET ?", answers);
+    console.log(`Added sprite to the database`);
     loadMainPrompts();}
     )
    })}
 
-function updateEmployeeRole(){
-  connection.query("SELECT * from employee", function(err,res){
-    const employees = res
-    const employeeChoices = employees.map(({id, first_name, last_name }) => ({
+function updateSpriteRole(){
+  connection.query("SELECT * from sprite", function(err,res){
+    const sprites = res
+    const spriteChoices = sprites.map(({id, first_name, last_name }) => ({
       name: `${first_name} ${last_name}`,
       value: id
     }));
@@ -185,14 +183,14 @@ function updateEmployeeRole(){
       {
         type: "list",
         name: "id",
-        message: "Which employee's role do you want to update?",
-        choices: employeeChoices
+        message: "Which sprite's role do you want to update?",
+        choices: spriteChoices
       } 
-    ]).then(answers => updateEmployeeRole2(answers))
+    ]).then(answers => updateSpriteRole2(answers))
     })
    
   }
-  function updateEmployeeRole2(employee){
+  function updateSpriteRole2(sprite){
     connection.query("SELECT * from role", function(err,res){
           const roles = res
           const rolesChoices = roles.map(({id, title}) => ({
@@ -206,8 +204,8 @@ function updateEmployeeRole(){
               message: "Which role do you want to assign?",
               choices: rolesChoices
             } 
-          ]).then(answers => {connection.query("UPDATE employee SET ? where ?", [answers, employee]);
-          console.log(`Employee Updated Success`);
+          ]).then(answers => {connection.query("UPDATE employee SET ? where ?", [answers, sprite]);
+          console.log(`Sprite Updated Success`);
           loadMainPrompts();})
       
       })}
